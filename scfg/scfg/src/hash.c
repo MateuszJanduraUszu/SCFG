@@ -17,15 +17,13 @@
 #define _SHA512_HASH_SIZE    64 // 512-bit hash
 #define _WHIRLPOOL_HASH_SIZE 64 // 512-bit hash
 
-// FUNCTION _Cleanup_openssl_on_failure
 inline scfg_error_t _SCFG_CONV _Cleanup_openssl_on_failure(EVP_MD_CTX* _Ctx) {
     EVP_MD_CTX_free(_Ctx); // release context
     return scfg_error_general_failure;
 }
 
-// FUNCTION _Hash_blake3
 inline scfg_error_t _SCFG_CONV _Hash_blake3(
-    const void* const _Data, const size_t _Size, scfg_buffer_t* const _Buf) {
+    const uint8_t* const _Bytes, const size_t _Size, scfg_byte_buffer_t* const _Buf) {
     if (!_Buf) {
         return scfg_error_invalid_buffer;
     }
@@ -35,21 +33,20 @@ inline scfg_error_t _SCFG_CONV _Hash_blake3(
     }
 
     uint8_t* _Ptr;
-    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, &_Ptr);
+    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, scfg_buffer_type_byte, &_Ptr);
     if (_Err != scfg_error_success) {
         return _Err;
     }
 
     blake3_hasher _Hasher;
     blake3_hasher_init(&_Hasher);
-    blake3_hasher_update(&_Hasher, _Data, _Size);
+    blake3_hasher_update(&_Hasher, _Bytes, _Size);
     blake3_hasher_finalize(&_Hasher, _Ptr, _BLAKE3_HASH_SIZE);
     return scfg_error_success;
 }
 
-// FUNCTION _Hash_file_blake3
 inline scfg_error_t _SCFG_CONV _Hash_file_blake3(
-    FILE* const _Stream, const size_t _Off, scfg_buffer_t* const _Buf) {
+    FILE* const _Stream, const size_t _Off, scfg_byte_buffer_t* const _Buf) {
     if (!_Stream) {
         return scfg_error_invalid_stream;
     }
@@ -59,7 +56,7 @@ inline scfg_error_t _SCFG_CONV _Hash_file_blake3(
     }
 
     uint8_t* _Ptr;
-    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, &_Ptr);
+    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, scfg_buffer_type_byte, &_Ptr);
     if (_Err != scfg_error_success) {
         return _Err;
     }
@@ -88,9 +85,8 @@ inline scfg_error_t _SCFG_CONV _Hash_file_blake3(
     return scfg_error_success;
 }
 
-// FUNCTION _Hash_sha512
 inline scfg_error_t _SCFG_CONV _Hash_sha512(
-    const void* const _Data, const size_t _Size, scfg_buffer_t* const _Buf) {
+    const uint8_t* const _Bytes, const size_t _Size, scfg_byte_buffer_t* const _Buf) {
     if (!_Buf) {
         return scfg_error_invalid_buffer;
     }
@@ -100,7 +96,7 @@ inline scfg_error_t _SCFG_CONV _Hash_sha512(
     }
 
     uint8_t* _Ptr;
-    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, &_Ptr);
+    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, scfg_buffer_type_byte, &_Ptr);
     if (_Err != scfg_error_success) {
         return _Err;
     }
@@ -114,7 +110,7 @@ inline scfg_error_t _SCFG_CONV _Hash_sha512(
         return _Cleanup_openssl_on_failure(_Ctx);
     }
 
-    if (EVP_DigestUpdate(_Ctx, _Data, _Size) != 1) {
+    if (EVP_DigestUpdate(_Ctx, _Bytes, _Size) != 1) {
         return _Cleanup_openssl_on_failure(_Ctx);
     }
 
@@ -127,9 +123,8 @@ inline scfg_error_t _SCFG_CONV _Hash_sha512(
     return scfg_error_success;
 }
 
-// FUNCTION _Hash_file_sha512
 inline scfg_error_t _SCFG_CONV _Hash_file_sha512(
-    FILE* const _Stream, const size_t _Off, scfg_buffer_t* const _Buf) {
+    FILE* const _Stream, const size_t _Off, scfg_byte_buffer_t* const _Buf) {
     if (!_Stream) {
         return scfg_error_invalid_stream;
     }
@@ -139,7 +134,7 @@ inline scfg_error_t _SCFG_CONV _Hash_file_sha512(
     }
 
     uint8_t* _Ptr;
-    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, &_Ptr);
+    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, scfg_buffer_type_byte, &_Ptr);
     if (_Err != scfg_error_success) {
         return _Err;
     }
@@ -186,9 +181,8 @@ inline scfg_error_t _SCFG_CONV _Hash_file_sha512(
 #pragma warning(push, 3)
 #pragma warning(disable : 4996) // C4996: WHIRLPOOL_Init(), WHIRLPOOL_Update() and WHIRLPOOL_Final()
                                 //        since OpenSSL 3.0
-// FUNCTION _Hash_whirlpool
 inline scfg_error_t _SCFG_CONV _Hash_whirlpool(
-    const void* const _Data, const size_t _Size, scfg_buffer_t* const _Buf) {
+    const uint8_t* const _Bytes, const size_t _Size, scfg_byte_buffer_t* const _Buf) {
     if (!_Buf) {
         return scfg_error_invalid_buffer;
     }
@@ -198,7 +192,7 @@ inline scfg_error_t _SCFG_CONV _Hash_whirlpool(
     }
 
     uint8_t* _Ptr;
-    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, &_Ptr);
+    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, scfg_buffer_type_byte, &_Ptr);
     if (_Err != scfg_error_success) {
         return _Err;
     }
@@ -208,7 +202,7 @@ inline scfg_error_t _SCFG_CONV _Hash_whirlpool(
         return scfg_error_general_failure;
     }
 
-    if (WHIRLPOOL_Update(&_Ctx, _Data, _Size) != 1) {
+    if (WHIRLPOOL_Update(&_Ctx, _Bytes, _Size) != 1) {
         return scfg_error_general_failure;
     }
 
@@ -219,9 +213,8 @@ inline scfg_error_t _SCFG_CONV _Hash_whirlpool(
     return scfg_error_success;
 }
 
-// FUNCTION _Hash_file_whirlpool
 inline scfg_error_t _SCFG_CONV _Hash_file_whirlpool(
-    FILE* const _Stream, const size_t _Off, scfg_buffer_t* const _Buf) {
+    FILE* const _Stream, const size_t _Off, scfg_byte_buffer_t* const _Buf) {
     if (!_Stream) {
         return scfg_error_invalid_stream;
     }
@@ -231,7 +224,7 @@ inline scfg_error_t _SCFG_CONV _Hash_file_whirlpool(
     }
 
     uint8_t* _Ptr;
-    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, &_Ptr);
+    const scfg_error_t _Err = scfg_get_associated_buffer(_Buf, scfg_buffer_type_byte, &_Ptr);
     if (_Err != scfg_error_success) {
         return _Err;
     }
@@ -270,7 +263,6 @@ inline scfg_error_t _SCFG_CONV _Hash_file_whirlpool(
 }
 #pragma warning(pop)
 
-// FUNCTION scfg_is_valid_hash_id
 int _SCFG_CONV scfg_is_valid_hash_id(const scfg_hash_id_t _Id) {
     switch (_Id) {
     case scfg_hash_id_blake3:
@@ -282,9 +274,8 @@ int _SCFG_CONV scfg_is_valid_hash_id(const scfg_hash_id_t _Id) {
     }
 }
 
-// FUNCTION scfg_hash
-scfg_error_t _SCFG_CONV scfg_hash(
-    const void* const _Data, const size_t _Size, const scfg_hash_id_t _Id, scfg_buffer_t* const _Buf) {
+scfg_error_t _SCFG_CONV scfg_hash_bytes(const uint8_t* const _Data, const size_t _Size,
+    const scfg_hash_id_t _Id, scfg_byte_buffer_t* const _Buf) {
     switch (_Id) {
     case scfg_hash_id_blake3:
         return _Hash_blake3(_Data, _Size, _Buf);
@@ -297,9 +288,59 @@ scfg_error_t _SCFG_CONV scfg_hash(
     }
 }
 
-// FUNCTION scfg_hash_file
+scfg_error_t _SCFG_CONV scfg_hash_utf8(const char* const _Data, const size_t _Size,
+    const scfg_hash_id_t _Id, scfg_byte_buffer_t* const _Buf) {
+    switch (_Id) {
+    case scfg_hash_id_blake3:
+        return _Hash_blake3((const uint8_t*) _Data, _Size, _Buf);
+    case scfg_hash_id_sha512:
+        return _Hash_sha512((const uint8_t*) _Data, _Size, _Buf);
+    case scfg_hash_id_whirlpool:
+        return _Hash_whirlpool((const uint8_t*) _Data, _Size, _Buf);
+    default:
+        return scfg_error_unsupported_hash;
+    }
+}
+
+scfg_error_t _SCFG_CONV scfg_hash_unicode(const wchar_t* const _Data, const size_t _Size,
+    const scfg_hash_id_t _Id, scfg_byte_buffer_t* const _Buf) {
+    size_t _Buf_size  = 0;
+    scfg_error_t _Err = scfg_unicode_to_utf8_required_buffer_size(_Data, _Size, &_Buf_size);
+    if (_Err != scfg_error_success) {
+        return _Err;
+    }
+
+    scfg_utf8_buffer_t _Temp_buf;
+    _Err = scfg_initialize_buffer(&_Temp_buf, scfg_buffer_type_utf8);
+    if (_Err != scfg_error_success) {
+        return _Err;
+    }
+
+    _Err = scfg_resize_buffer(&_Temp_buf, scfg_buffer_type_utf8, _Buf_size, NULL);
+    if (_Err != scfg_error_success) {
+        return _Err;
+    }
+
+    _Err = scfg_unicode_to_utf8(_Data, _Size, &_Temp_buf);
+    if (_Err != scfg_error_success) {
+        scfg_release_buffer(&_Temp_buf, scfg_buffer_type_utf8, NULL);
+        return _Err;
+    }
+
+    char* _Ptr;
+    _Err = scfg_get_associated_buffer(&_Temp_buf, scfg_buffer_type_utf8, &_Ptr);
+    if (_Err != scfg_error_success) {
+        scfg_release_buffer(&_Temp_buf, scfg_buffer_type_utf8, NULL);
+        return _Err;
+    }
+
+    _Err = scfg_hash_utf8(_Ptr, _Temp_buf._Size, _Id, _Buf);
+    scfg_release_buffer(&_Temp_buf, scfg_buffer_type_utf8, NULL);
+    return _Err;
+}
+
 scfg_error_t _SCFG_CONV scfg_hash_file(
-    FILE* const _Stream, const size_t _Off, const scfg_hash_id_t _Id, scfg_buffer_t* const _Buf) {
+    FILE* const _Stream, const size_t _Off, const scfg_hash_id_t _Id, scfg_byte_buffer_t* const _Buf) {
     switch (_Id) {
     case scfg_hash_id_blake3:
         return _Hash_file_blake3(_Stream, _Off, _Buf);
