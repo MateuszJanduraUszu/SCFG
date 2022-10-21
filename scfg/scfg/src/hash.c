@@ -334,7 +334,7 @@ scfg_error_t _SCFG_CONV scfg_hash_unicode(const wchar_t* const _Data, const size
         return _Err;
     }
 
-    _Err = scfg_hash_utf8(_Ptr, _Temp_buf._Size, _Id, _Buf);
+    _Err = scfg_hash_bytes((const uint8_t*) _Ptr, _Temp_buf._Size, _Id, _Buf);
     scfg_release_buffer(&_Temp_buf, scfg_buffer_type_utf8, NULL);
     return _Err;
 }
