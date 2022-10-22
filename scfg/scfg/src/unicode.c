@@ -23,7 +23,7 @@ scfg_error_t _SCFG_CONV scfg_unicode_to_utf8_required_buffer_size(
             *_Buf_size += 3;
         } else if (*_Data <= 0x0010'FFFF) { // 4 bytes per word
             *_Buf_size += 4;
-        } else { // word too large, see RFC3629
+        } else { // word too large, see RFC 3629
             return scfg_error_code_point_too_large;
         }
 
@@ -53,7 +53,7 @@ scfg_error_t _SCFG_CONV scfg_utf8_to_unicode_required_buffer_size(
         } else if ((*_Data & 0xF8) == 0xF0) { // 4 bytes per word
             _Data_size -= 4;
             _Data      += 4;
-        } else { // word too large, see RFC3629
+        } else { // word too large, see RFC 3629
             return scfg_error_code_point_too_large;
         }
 
@@ -100,7 +100,7 @@ scfg_error_t _SCFG_CONV scfg_unicode_to_utf8(
             *(_Ptr++) = (char) (((*_Data >> 12) & 0x3F) | 0x80);
             *(_Ptr++) = (char) (((*_Data >> 6) & 0x3F) | 0x80);
             *(_Ptr++) = (char) ((*_Data & 0x3F) | 0x80);
-        } else { // word too large, see RFC3629
+        } else { // word too large, see RFC 3629
             return scfg_error_code_point_too_large;
         }
 
@@ -151,7 +151,7 @@ scfg_error_t _SCFG_CONV scfg_utf8_to_unicode(
             *_Ptr |= (wchar_t) ((*(_Data++) & 0x3F) << 6);
             *_Ptr |= (wchar_t) (*(_Data++) & 0x3F);
             _Size -= 4;
-        } else { // word too large, see RFC3629
+        } else { // word too large, see RFC 3629
             return scfg_error_code_point_too_large;
         }
 
