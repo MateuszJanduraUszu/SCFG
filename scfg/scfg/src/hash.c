@@ -263,7 +263,7 @@ inline scfg_error_t _SCFG_CONV _Hash_file_whirlpool(
 }
 #pragma warning(pop)
 
-int _SCFG_CONV scfg_is_valid_hash_id(const scfg_hash_id_t _Id) {
+__bool_t _SCFG_CONV scfg_is_valid_hash_id(const scfg_hash_id_t _Id) {
     switch (_Id) {
     case scfg_hash_id_blake3:
     case scfg_hash_id_sha512:
